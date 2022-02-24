@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# pynetbox documentation build configuration file, created by
+# pypeering documentation build configuration file, created by
 # sphinx-quickstart on Thu Apr  6 22:31:03 2017.
 #
 # This file is execfile()d with the current directory set to its
@@ -47,7 +47,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "pynetbox"
+project = "pypeering"
 copyright = "2017, DigitalOcean"
 author = "Zach Moody"
 
@@ -55,7 +55,7 @@ author = "Zach Moody"
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 # The full version, including alpha/beta/rc tags.
-release = get_distribution("pynetbox").version
+release = get_distribution("pypeering").version
 #
 # The short X.Y version.
 version = ".".join(release.split(".")[:2])
@@ -104,7 +104,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "pynetboxdoc"
+htmlhelp_basename = "pypeeringdoc"
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -128,7 +128,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "pynetbox.tex", "pynetbox Documentation", "Zach Moody", "manual"),
+    (master_doc, "pypeering.tex", "pypeering Documentation", "Marek Isalski", "manual"),
 ]
 
 
@@ -136,7 +136,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "pynetbox", "pynetbox Documentation", [author], 1)]
+man_pages = [(master_doc, "pypeering", "pypeering Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output -------------------------------------------
@@ -147,11 +147,11 @@ man_pages = [(master_doc, "pynetbox", "pynetbox Documentation", [author], 1)]
 texinfo_documents = [
     (
         master_doc,
-        "pynetbox",
-        "pynetbox Documentation",
+        "pypeering",
+        "pypeering Documentation",
         author,
-        "pynetbox",
-        "A python library for NetBox.",
+        "pypeering",
+        "A python library for Peering Manager.",
         "Miscellaneous",
     ),
 ]

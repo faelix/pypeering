@@ -1,8 +1,8 @@
 Endpoint
 ========
 
-.. autoclass:: pynetbox.core.endpoint.Endpoint
+.. autoclass:: pypeering.core.endpoint.Endpoint
   :members:
 
-.. autoclass:: pynetbox.core.endpoint.DetailEndpoint
+.. autoclass:: pypeering.core.endpoint.DetailEndpoint
   :members:

@@ -1,8 +1,8 @@
 Response
 ========
 
-.. autoclass:: pynetbox.core.response.Record
+.. autoclass:: pypeering.core.response.Record
   :members:
 
-.. autoclass:: pynetbox.core.response.RecordSet
+.. autoclass:: pypeering.core.response.RecordSet
   :members:

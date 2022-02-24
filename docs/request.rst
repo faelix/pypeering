@@ -1,11 +1,11 @@
 Request
 ========
 
-.. autoclass:: pynetbox.core.query.RequestError
+.. autoclass:: pypeering.core.query.RequestError
   :members:
 
-.. autoclass:: pynetbox.core.query.ContentError
+.. autoclass:: pypeering.core.query.ContentError
   :members:
 
-.. autoclass:: pynetbox.core.query.AllocationError
+.. autoclass:: pypeering.core.query.AllocationError
   :members:

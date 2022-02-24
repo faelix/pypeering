@@ -1,8 +1,8 @@
 IPAM
 ========
 
-.. autoclass:: pynetbox.models.ipam.Prefixes
+.. autoclass:: pypeering.models.ipam.Prefixes
   :members:
 
-.. autoclass:: pynetbox.models.ipam.VlanGroups
+.. autoclass:: pypeering.models.ipam.VlanGroups
   :members:

@@ -14,8 +14,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib64/
 lib/
+lib64/
 parts/
 sdist/
 var/
@@ -97,10 +97,3 @@ ENV/
 
 # mypy
 .mypy_cache/
-
-# Other git repos checked out locally
-.netbox-docker-*/
-.devicetype-library/
-
-# Visual Studio Code settings
-.vscode/

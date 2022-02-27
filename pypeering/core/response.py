@@ -47,7 +47,7 @@ def get_return(lookup, return_fields=None):
         else:
             if hasattr(lookup, i):
                 # check if this is a "choices" field record
-                # from a NetBox 2.7 server.
+                # from a Peering Manager 2.7 server.
                 if sorted(dict(lookup)) == sorted(["id", "value", "label"]):
                     return getattr(lookup, "value")
                 return getattr(lookup, i)
@@ -82,14 +82,14 @@ class RecordSet(object):
 
     To see how many results are in a query by calling ``len()``:
 
-    >>> x = nb.dcim.devices.all()
+    >>> x = pm.dcim.devices.all()
     >>> len(x)
     123
     >>>
 
     Simple iteration of the results:
 
-    >>> devices = nb.dcim.devices.all()
+    >>> devices = pm.dcim.devices.all()
     >>> for device in devices:
     ...     print(device.name)
     ...
@@ -137,7 +137,7 @@ class RecordSet(object):
         :returns: True if the update succeeded, None if no update were required
         :example:
 
-        >>> result = nb.dcim.devices.filter(site_id=1).update(status='active')
+        >>> result = pm.dcim.devices.filter(site_id=1).update(status='active')
         True
         >>>
         """
@@ -174,9 +174,9 @@ class RecordSet(object):
 
 
 class Record(object):
-    """Create Python objects from NetBox API responses.
+    """Create Python objects from Peering Manager API responses.
 
-    Creates an object from a NetBox response passed as ``values``.
+    Creates an object from a Peering Manager response passed as ``values``.
     Nested dicts that represent other endpoints are also turned
     into ``Record`` objects. All fields are then assigned to the
     object's attributes. If a missing attr is requested
@@ -188,21 +188,21 @@ class Record(object):
 
     Default representation of the object is usually its name:
 
-    >>> x = nb.dcim.devices.get(1)
+    >>> x = pm.dcim.devices.get(1)
     >>> x
     test1-switch1
     >>>
 
     Querying a string field:
 
-    >>> x = nb.dcim.devices.get(1)
+    >>> x = pm.dcim.devices.get(1)
     >>> x.serial
     'ABC123'
     >>>
 
     Querying a field on a nested object:
 
-    >>> x = nb.dcim.devices.get(1)
+    >>> x = pm.dcim.devices.get(1)
     >>> x.device_type.model
     'QFX5100-24Q'
     >>>
@@ -315,9 +315,8 @@ class Record(object):
 
     def __str__(self):
         return (
-            getattr(self, "name", None)
-            or getattr(self, "label", None)
-            or getattr(self, "display", None)
+            getattr(self, "display", None)
+            or getattr(self, "name", None)
             or ""
         )
 
@@ -495,7 +494,7 @@ class Record(object):
         :returns: dict.
         :example:
 
-        >>> x = nb.dcim.devices.get(name='test1-a3-tor1b')
+        >>> x = pm.dcim.devices.get(name='test1-a3-tor1b')
         >>> x.serial
         u''
         >>> x.serial = '1234'
@@ -519,7 +518,7 @@ class Record(object):
         :returns: True if PATCH request was successful.
         :example:
 
-        >>> x = nb.dcim.devices.get(name='test1-a3-tor1b')
+        >>> x = pm.dcim.devices.get(name='test1-a3-tor1b')
         >>> x.serial
         u''
         >>> x.serial = '1234'
@@ -552,7 +551,7 @@ class Record(object):
         :returns: True if PATCH request was successful.
         :example:
 
-        >>> x = nb.dcim.devices.get(1)
+        >>> x = pm.dcim.devices.get(1)
         >>> x.update({
         ...   "name": "test-switch2",
         ...   "serial": "ABC321",
@@ -571,7 +570,7 @@ class Record(object):
         :returns: True if DELETE operation was successful.
         :example:
 
-        >>> x = nb.dcim.devices.get(name='test1-a3-tor1b')
+        >>> x = pm.dcim.devices.get(name='test1-a3-tor1b')
         >>> x.delete()
         True
         >>>

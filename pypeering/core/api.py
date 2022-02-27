@@ -19,7 +19,7 @@ import sys
 import requests
 
 from pypeering.core.query import Request
-from pypeering.core.app import App, PluginsApp
+from pypeering.core.app import App
 from pypeering.core.response import Record
 
 
@@ -30,15 +30,14 @@ class Api(object):
     you can specify which app and endpoint you wish to interact with.
 
     Valid attributes currently are:
-        * dcim
-        * ipam
-        * circuits
-        * secrets (on NetBox 2.11 and older)
-        * tenancy
+        * bgp
+        * devices
         * extras
-        * virtualization
-        * users (since NetBox 2.9)
-        * wireless (since NetBox 3.1)
+        * net
+        * peering
+        * peeringdb
+        * users
+        * utils
 
     Calling any of these attributes will return
     :py:class:`.App` which exposes endpoints as attributes.
@@ -50,12 +49,9 @@ class Api(object):
                 retires, and timeouts.
                 See `custom sessions <advanced.html#custom-sessions>`__ for more info.
 
-    :param str url: The base URL to the instance of NetBox you
+    :param str url: The base URL to the instance of Peering Manager you
         wish to connect to.
-    :param str token: Your NetBox token.
-    :param str,optional private_key_file: The path to your private
-        key file. (Usable only on NetBox 2.11 and older)
-    :param str,optional private_key: Your private key. (Usable only on NetBox 2.11 and older)
+    :param str token: Your Peering Manager token.
     :param bool,optional threading: Set to True to use threading in ``.all()``
         and ``.filter()`` requests.
     :raises ValueError: If *private_key* and *private_key_file* are both
@@ -64,11 +60,11 @@ class Api(object):
     :Examples:
 
     >>> import pypeering
-    >>> nb = pypeering.api(
+    >>> pm = pypeering.api(
     ...     'http://localhost:8000',
     ...     token='d6f4e314a5b5fefd164995169f28ae32d987704f'
     ... )
-    >>> list(nb.dcim.devices.all())
+    >>> list(pm.dcim.devices.all())
     [test1-leaf1, test1-leaf2, test1-leaf3]
     """
 
@@ -76,20 +72,11 @@ class Api(object):
         self,
         url,
         token=None,
-        private_key=None,
-        private_key_file=None,
         threading=False,
     ):
-        if private_key and private_key_file:
-            raise ValueError(
-                '"private_key" and "private_key_file" cannot be used together.'
-            )
         base_url = "{}/api".format(url if url[-1] != "/" else url[:-1])
         self.token = token
-        self.private_key = private_key
-        self.private_key_file = private_key_file
         self.base_url = base_url
-        self.session_key = None
         self.http_session = requests.Session()
         if threading and sys.version_info.major == 2:
             raise NotImplementedError(
@@ -97,38 +84,31 @@ class Api(object):
             )
         self.threading = threading
 
-        if self.private_key_file:
-            with open(self.private_key_file, "r") as kf:
-                private_key = kf.read()
-                self.private_key = private_key
-
-        self.dcim = App(self, "dcim")
-        self.ipam = App(self, "ipam")
-        self.circuits = App(self, "circuits")
-        self.secrets = App(self, "secrets")
-        self.tenancy = App(self, "tenancy")
+        self.bgp = App(self, "bgp")
+        self.devices = App(self, "devices")
         self.extras = App(self, "extras")
-        self.virtualization = App(self, "virtualization")
+        self.net = App(self, "net")
+        self.peering = App(self, "peering")
+        self.peeringdb = App(self, "peeringdb")
         self.users = App(self, "users")
-        self.wireless = App(self, "wireless")
-        self.plugins = PluginsApp(self)
+        self.utils = App(self, "utils")
 
     @property
     def version(self):
-        """Gets the API version of NetBox.
+        """Gets the API version of Peering Manager.
 
-        Can be used to check the NetBox API version if there are
+        Can be used to check the Peering Manager API version if there are
         version-dependent features or syntaxes in the API.
 
         :Returns: Version number as a string.
         :Example:
 
         >>> import pypeering
-        >>> nb = pypeering.api(
+        >>> pm = pypeering.api(
         ...     'http://localhost:8000',
         ...     token='d6f4e314a5b5fefd164995169f28ae32d987704f'
         ... )
-        >>> nb.version
+        >>> pm.version
         '3.1'
         >>>
         """
@@ -147,11 +127,11 @@ class Api(object):
         :Example:
 
         >>> import pypeering
-        >>> nb = pypeering.api(
+        >>> pm = pypeering.api(
         ...     'http://localhost:8000',
         ...     token='d6f4e314a5b5fefd164995169f28ae32d987704f'
         ... )
-        >>> nb.openapi()
+        >>> pm.openapi()
         {...}
         >>>
         """
@@ -161,29 +141,26 @@ class Api(object):
         ).get_openapi()
 
     def status(self):
-        """Gets the status information from NetBox.
+        """Gets the status information from Peering Manager.
 
-        Available in NetBox 2.10.0 or newer.
+        Available in Peering Manager 2.10.0 or newer.
 
-        :Returns: Dictionary as returned by NetBox.
+        :Returns: Dictionary as returned by Peering Manager.
         :Raises: :py:class:`.RequestError` if the request is not successful.
         :Example:
 
-        >>> pprint.pprint(nb.status())
-        {'django-version': '3.1.3',
+        >>> pprint.pprint(pm.status())
+        {'django-version': '3.2.10',
          'installed-apps': {'cacheops': '5.0.1',
-                            'debug_toolbar': '3.1.1',
-                            'django_filters': '2.4.0',
+                            'debug_toolbar': '3.2.2',
+                            'django_filters': '21.1',
                             'django_prometheus': '2.1.0',
-                            'django_rq': '2.4.0',
-                            'django_tables2': '2.3.3',
-                            'drf_yasg': '1.20.0',
-                            'mptt': '0.11.0',
-                            'rest_framework': '3.12.2',
-                            'taggit': '1.3.0',
-                            'timezone_field': '4.0'},
-         'peering-version': '2.10.2',
-         'plugins': {},
+                            'django_rq': '2.5.1',
+                            'django_tables2': '2.4.1',
+                            'drf_spectacular': '0.21.0',
+                            'rest_framework': '3.12.4',
+                            'taggit': '2.0.0'},
+         'peering-manager-version': 'v1.5.2',
          'python-version': '3.7.3',
          'rq-workers-running': 1}
         >>>
@@ -194,44 +171,3 @@ class Api(object):
             http_session=self.http_session,
         ).get_status()
         return status
-
-    def create_token(self, username, password):
-        """Creates an API token using a valid NetBox username and password.
-        Saves the created token automatically in the API object.
-
-        Requires NetBox 3.0.0 or newer.
-
-        :Returns: The token as a ``Record`` object.
-        :Raises: :py:class:`.RequestError` if the request is not successful.
-
-        :Example:
-
-        >>> import pypeering
-        >>> nb = pypeering.api("https://peering-server")
-        >>> token = nb.create_token("admin", "peeringpassword")
-        >>> nb.token
-        '96d02e13e3f1fdcd8b4c089094c0191dcb045bef'
-        >>> from pprint import pprint
-        >>> pprint(dict(token))
-        {'created': '2021-11-27T11:26:49.360185+02:00',
-         'description': '',
-         'display': '045bef (admin)',
-         'expires': None,
-         'id': 2,
-         'key': '96d02e13e3f1fdcd8b4c089094c0191dcb045bef',
-         'url': 'https://peering-server/api/users/tokens/2/',
-         'user': {'display': 'admin',
-                  'id': 1,
-                  'url': 'https://peering-server/api/users/users/1/',
-                  'username': 'admin'},
-         'write_enabled': True}
-        >>>
-        """
-        resp = Request(
-            base="{}/users/tokens/provision/".format(self.base_url),
-            http_session=self.http_session,
-        ).post(data={"username": username, "password": password})
-        # Save the newly created API token, otherwise populating the Record
-        # object details will fail
-        self.token = resp["key"]
-        return Record(resp, self, None)

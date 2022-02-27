@@ -38,7 +38,7 @@ class RequestError(Exception):
     :Example:
 
     >>> try:
-    ...   nb.dcim.devices.create(name="destined-for-failure")
+    ...   pm.dcim.devices.create(name="destined-for-failure")
     ... except pypeering.RequestError as e:
     ...   print(e.error)
 
@@ -57,7 +57,7 @@ class RequestError(Exception):
             except ValueError:
                 message = (
                     "The request failed with code {} {} but more specific "
-                    "details were not returned in json. Check the NetBox Logs "
+                    "details were not returned in json. Check the Peering Manager Logs "
                     "or investigate this exception's error attribute.".format(
                         req.status_code, req.reason
                     )
@@ -74,8 +74,8 @@ class AllocationError(Exception):
     """Allocation Exception
 
     Used with available-ips/available-prefixes when there is no
-    room for allocation and NetBox returns 204 No Content (before
-    NetBox 3.1.1) or 409 Conflict (since NetBox 3.1.1+).
+    room for allocation and Peering Manager returns 204 No Content (before
+    Peering Manager 3.1.1) or 409 Conflict (since Peering Manager 3.1.1+).
     """
 
     def __init__(self, message):
@@ -93,7 +93,7 @@ class AllocationError(Exception):
 class ContentError(Exception):
     """Content Exception
 
-    If the API URL does not point to a valid NetBox API, the server may
+    If the API URL does not point to a valid Peering Manager API, the server may
     return a valid response code, but the content is not json. This
     exception is raised in those cases.
     """
@@ -102,7 +102,7 @@ class ContentError(Exception):
         req = message
 
         message = (
-            "The server returned invalid (non-json) data. Maybe not " "a NetBox server?"
+            "The server returned invalid (non-json) data. Maybe not " "a Peering Manager server?"
         )
 
         super(ContentError, self).__init__(message)
@@ -113,10 +113,10 @@ class ContentError(Exception):
 
 
 class Request(object):
-    """Creates requests to the Netbox API
+    """Creates requests to the Peering Manager API
 
     Responsible for building the url and making the HTTP(S) requests to
-    Netbox's API
+    Peering Manager's API
 
     :param base: (str) Base URL passed in api() instantiation.
     :param filters: (dict, optional) contains key/value pairs that
@@ -136,8 +136,6 @@ class Request(object):
         offset=None,
         key=None,
         token=None,
-        private_key=None,
-        session_key=None,
         threading=False,
     ):
         """
@@ -157,8 +155,6 @@ class Request(object):
         self.filters = filters or None
         self.key = key
         self.token = token
-        self.private_key = private_key
-        self.session_key = session_key
         self.http_session = http_session
         self.url = self.base if not key else "{}{}/".format(self.base, key)
         self.threading = threading
@@ -180,7 +176,7 @@ class Request(object):
             raise RequestError(req)
 
     def get_version(self):
-        """Gets the API version of NetBox.
+        """Gets the API version of Peering Manager.
 
         Issues a GET request to the base URL to read the API version from the
         response headers.
@@ -201,35 +197,10 @@ class Request(object):
         else:
             raise RequestError(req)
 
-    def get_session_key(self):
-        """Requests session key
-
-        Issues a GET request to the `get-session-key` endpoint for
-        subsequent use in requests from the `secrets` endpoint.
-
-        :Returns: String containing session key.
-        """
-        req = self.http_session.post(
-            "{}secrets/get-session-key/?preserve_key=True".format(self.base),
-            headers={
-                "accept": "application/json",
-                "authorization": "Token {}".format(self.token),
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            data=urlencode({"private_key": self.private_key.strip("\n")}),
-        )
-        if req.ok:
-            try:
-                return req.json()["session_key"]
-            except json.JSONDecodeError:
-                raise ContentError(req)
-        else:
-            raise RequestError(req)
-
     def get_status(self):
-        """Gets the status from /api/status/ endpoint in NetBox.
+        """Gets the status from /api/status/ endpoint in Peering Manager.
 
-        :Returns: Dictionary as returned by NetBox.
+        :Returns: Dictionary as returned by Peering Manager.
         :Raises: RequestError if request is not successful.
         """
         headers = {"Content-Type": "application/json;"}
@@ -259,8 +230,6 @@ class Request(object):
 
         if self.token:
             headers["authorization"] = "Token {}".format(self.token)
-        if self.session_key:
-            headers["X-Session-Key"] = self.session_key
 
         params = {}
         if not url_override:
@@ -304,7 +273,7 @@ class Request(object):
     def get(self, add_params=None):
         """Makes a GET request.
 
-        Makes a GET request to NetBox's API, and automatically recurses
+        Makes a GET request to Peering Manager's API, and automatically recurses
         any paginated results.
 
         :raises: RequestError if req.ok returns false.
@@ -372,21 +341,21 @@ class Request(object):
     def put(self, data):
         """Makes PUT request.
 
-        Makes a PUT request to NetBox's API. Adds the session key to
+        Makes a PUT request to Peering Manager's API. Adds the session key to
         headers if the `private_key` attribute was populated.
 
         :param data: (dict) Contains a dict that will be turned into a
             json object and sent to the API.
         :raises: RequestError if req.ok returns false.
         :raises: ContentError if response is not json.
-        :returns: Dict containing the response from NetBox's API.
+        :returns: Dict containing the response from Peering Manager's API.
         """
         return self._make_call(verb="put", data=data)
 
     def post(self, data):
         """Makes POST request.
 
-        Makes a POST request to NetBox's API. Adds the session key to
+        Makes a POST request to Peering Manager's API. Adds the session key to
         headers if the `private_key` attribute was populated.
 
         :param data: (dict) Contains a dict that will be turned into a
@@ -396,14 +365,14 @@ class Request(object):
             as with available-ips and available-prefixes when there is
             no room for the requested allocation.
         :raises: ContentError if response is not json.
-        :Returns: Dict containing the response from NetBox's API.
+        :Returns: Dict containing the response from Peering Manager's API.
         """
         return self._make_call(verb="post", data=data)
 
     def delete(self, data=None):
         """Makes DELETE request.
 
-        Makes a DELETE request to NetBox's API.
+        Makes a DELETE request to Peering Manager's API.
 
         :param data: (list) Contains a dict that will be turned into a
             json object and sent to the API.
@@ -418,25 +387,25 @@ class Request(object):
     def patch(self, data):
         """Makes PATCH request.
 
-        Makes a PATCH request to NetBox's API.
+        Makes a PATCH request to Peering Manager's API.
 
         :param data: (dict) Contains a dict that will be turned into a
             json object and sent to the API.
         :raises: RequestError if req.ok returns false.
         :raises: ContentError if response is not json.
-        :returns: Dict containing the response from NetBox's API.
+        :returns: Dict containing the response from Peering Manager's API.
         """
         return self._make_call(verb="patch", data=data)
 
     def options(self):
         """Makes an OPTIONS request.
 
-        Makes an OPTIONS request to NetBox's API.
+        Makes an OPTIONS request to Peering Manager's API.
 
         :raises: RequestError if req.ok returns false.
         :raises: ContentError if response is not json.
 
-        :returns: Dict containing the response from NetBox's API.
+        :returns: Dict containing the response from Peering Manager's API.
         """
         return self._make_call(verb="options")
 

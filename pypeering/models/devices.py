@@ -1,5 +1,6 @@
 """
 (c) 2017 DigitalOcean
+(c) 2022 Faelix Limited
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,6 +17,6 @@ limitations under the License.
 from pypeering.core.response import Record
 
 
-class WirelessLans(Record):
+class Platforms(Record):
     def __str__(self):
-        return self.ssid
+        return self.display

@@ -1,5 +1,6 @@
 """
 (c) 2017 DigitalOcean
+(c) 2022 Faelix Limited
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,13 +14,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from pypeering.core.response import Record, JsonField
-from pypeering.models.ipam import IpAddresses
+from pypeering.core.response import Record
 
 
-class VirtualMachines(Record):
-
-    primary_ip = IpAddresses
-    primary_ip4 = IpAddresses
-    primary_ip6 = IpAddresses
-    config_context = JsonField
+# XXX todo

@@ -1,5 +1,6 @@
 """
 (c) 2017 DigitalOcean
+(c) 2022 Faelix Limited
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,10 +18,12 @@ from pypeering.core.response import Record, JsonField
 
 
 class Users(Record):
+    groups = [Groups]
+
     def __str__(self):
         return self.username
 
 
-class Permissions(Record):
-    users = [Users]
-    constraints = JsonField
+class Groups(Record):
+    def __str__(self):
+        return self.name

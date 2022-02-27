@@ -34,10 +34,10 @@ class Endpoint(object):
 
     .. note::
 
-        In order to call NetBox endpoints with dashes in their
+        In order to call Peering Manager endpoints with dashes in their
         names you should convert the dash to an underscore.
         (E.g. querying the ip-addresses endpoint is done with
-        ``nb.ipam.ip_addresses.all()``.)
+        ``pm.ipam.ip_addresses.all()``.)
 
     """
 
@@ -87,7 +87,7 @@ class Endpoint(object):
 
         :Examples:
 
-        >>> devices = nb.dcim.devices.all()
+        >>> devices = pm.dcim.devices.all()
         >>> for device in devices:
         ...     print(device.name)
         ...
@@ -128,13 +128,13 @@ class Endpoint(object):
 
         Referencing with a kwarg that only returns one value.
 
-        >>> nb.dcim.devices.get(name='test1-a3-tor1b')
+        >>> pm.dcim.devices.get(name='test1-a3-tor1b')
         test1-a3-tor1b
         >>>
 
         Referencing with an id.
 
-        >>> nb.dcim.devices.get(1)
+        >>> pm.dcim.devices.get(1)
         test1-edge1
         >>>
         """
@@ -195,7 +195,7 @@ class Endpoint(object):
 
         To return a list of objects matching a named argument filter.
 
-        >>> devices = nb.dcim.devices.filter(role='leaf-switch')
+        >>> devices = pm.dcim.devices.filter(role='leaf-switch')
         >>> for device in devices:
         ...     print(device.name)
         ...
@@ -206,7 +206,7 @@ class Endpoint(object):
 
         Using a freeform query along with a named argument.
 
-        >>> devices = nb.dcim.devices.filter('a3', role='leaf-switch')
+        >>> devices = pm.dcim.devices.filter('a3', role='leaf-switch')
         >>> for device in devices:
         ...     print(device.name)
         ...
@@ -216,7 +216,7 @@ class Endpoint(object):
 
         Chaining multiple named arguments.
 
-        >>> devices = nb.dcim.devices.filter(role='leaf-switch', status=True)
+        >>> devices = pm.dcim.devices.filter(role='leaf-switch', status=True)
         >>> for device in devices:
         ...     print(device.name)
         ...
@@ -226,7 +226,7 @@ class Endpoint(object):
         Passing a list as a named argument adds multiple filters of the
         same value.
 
-        >>> devices = nb.dcim.devices.filter(role=['leaf-switch', 'spine-switch'])
+        >>> devices = pm.dcim.devices.filter(role=['leaf-switch', 'spine-switch'])
         >>> for device in devices:
         ...     print(device.name)
         ...
@@ -266,7 +266,7 @@ class Endpoint(object):
 
         Allows for the creation of new objects on an endpoint. Named
         arguments are converted to json properties, and a single object
-        is created. NetBox's bulk creation capabilities can be used by
+        is created. Peering Manager's bulk creation capabilities can be used by
         passing a list of dictionaries as the first argument.
 
         .. note:
@@ -293,7 +293,7 @@ class Endpoint(object):
 
         Use bulk creation by passing a list of dictionaries:
 
-        >>> nb.dcim.devices.create([
+        >>> pm.dcim.devices.create([
         ...     {
         ...         "name": "test1-core3",
         ...         "device_role": 3,
@@ -347,10 +347,10 @@ class Endpoint(object):
 
         Use bulk update by passing a list of Records:
 
-        >>> devices = nb.dcim.devices.all()
+        >>> devices = pm.dcim.devices.all()
         >>> for d in devices:
         >>>     d.name = d.name+'-test'
-        >>> nb.dcim.devices.update(devices)
+        >>> pm.dcim.devices.update(devices)
         >>> True
         """
         series = []
@@ -445,57 +445,6 @@ class Endpoint(object):
         )
         return True if req.delete(data=[{"id": i} for i in cleaned_ids]) else False
 
-    def choices(self):
-        """Returns all choices from the endpoint.
-
-        The returned dict is also saved in the endpoint object (in
-        ``_choices`` attribute) so that later calls will return the same data
-        without recurring requests to NetBox. When using ``.choices()`` in
-        long-running applications, consider restarting them whenever NetBox is
-        upgraded, to prevent using stale choices data.
-
-        :Returns: Dict containing the available choices.
-
-        :Example (from NetBox 2.8.x):
-
-        >>> from pprint import pprint
-        >>> pprint(nb.ipam.ip_addresses.choices())
-        {'role': [{'display_name': 'Loopback', 'value': 'loopback'},
-                  {'display_name': 'Secondary', 'value': 'secondary'},
-                  {'display_name': 'Anycast', 'value': 'anycast'},
-                  {'display_name': 'VIP', 'value': 'vip'},
-                  {'display_name': 'VRRP', 'value': 'vrrp'},
-                  {'display_name': 'HSRP', 'value': 'hsrp'},
-                  {'display_name': 'GLBP', 'value': 'glbp'},
-                  {'display_name': 'CARP', 'value': 'carp'}],
-         'status': [{'display_name': 'Active', 'value': 'active'},
-                    {'display_name': 'Reserved', 'value': 'reserved'},
-                    {'display_name': 'Deprecated', 'value': 'deprecated'},
-                    {'display_name': 'DHCP', 'value': 'dhcp'}]}
-        >>>
-        """
-        if self._choices:
-            return self._choices
-
-        req = Request(
-            base=self.url,
-            token=self.api.token,
-            private_key=self.api.private_key,
-            http_session=self.api.http_session,
-        ).options()
-        try:
-            post_data = req["actions"]["POST"]
-        except KeyError:
-            raise ValueError(
-                "Unexpected format in the OPTIONS response at {}".format(self.url)
-            )
-        self._choices = {}
-        for prop in post_data:
-            if "choices" in post_data[prop]:
-                self._choices[prop] = post_data[prop]["choices"]
-
-        return self._choices
-
     def count(self, *args, **kwargs):
         r"""Returns the count of objects in a query.
 
@@ -516,13 +465,13 @@ class Endpoint(object):
 
         To return a count of objects matching a named argument filter.
 
-        >>> nb.dcim.devices.count(site='tst1')
+        >>> pm.dcim.devices.count(site='tst1')
         5827
         >>>
 
         To return a count of objects on an entire endpoint.
 
-        >>> nb.dcim.devices.count()
+        >>> pm.dcim.devices.count()
         87382
         >>>
         """
@@ -568,7 +517,7 @@ class DetailEndpoint(object):
     def list(self, **kwargs):
         r"""The view operation for a detail endpoint
 
-        Returns the response from NetBox for a detail endpoint.
+        Returns the response from Peering Manager for a detail endpoint.
 
         :args \**kwargs: key/value pairs that get converted into url
             parameters when passed to the endpoint.
@@ -576,7 +525,7 @@ class DetailEndpoint(object):
             ``.../?method=get_facts``.
 
         :returns: A :py:class:`.Record` object or list of :py:class:`.Record` objects created
-            from data retrieved from NetBox.
+            from data retrieved from Peering Manager.
         """
         req = Request(**self.request_kwargs).get(add_params=kwargs)
 
@@ -592,7 +541,7 @@ class DetailEndpoint(object):
     def create(self, data=None):
         """The write operation for a detail endpoint.
 
-        Creates objects on a detail endpoint in NetBox.
+        Creates objects on a detail endpoint in Peering Manager.
 
         :arg dict/list,optional data: A dictionary containing the
             key/value pair of the items you're creating on the parent
@@ -600,7 +549,7 @@ class DetailEndpoint(object):
             item with default values.
 
         :returns: A :py:class:`.Record` object or list of :py:class:`.Record` objects created
-            from data created in NetBox.
+            from data created in Peering Manager.
         """
         data = data or {}
         req = Request(**self.request_kwargs).post(data)

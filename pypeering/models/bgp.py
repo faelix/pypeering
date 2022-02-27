@@ -1,5 +1,6 @@
 """
 (c) 2017 DigitalOcean
+(c) 2022 Faelix Limited
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,11 +17,6 @@ limitations under the License.
 from pypeering.core.response import Record
 
 
-class Circuits(Record):
+class Relationships(Record):
     def __str__(self):
-        return self.cid
-
-
-class CircuitTerminations(Record):
-    def __str__(self):
-        return self.circuit.cid
+        return self.display

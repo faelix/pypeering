@@ -1,0 +1,74 @@
+"""
+(c) 2017 DigitalOcean
+(c) 2022 Faelix Limited
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+from pypeering.core.response import Record, JsonField
+
+
+class Facilities(Record):
+    org = JsonField
+
+
+class InternetExchangeFacilities(Record):
+    ix = JsonField
+    fac = JsonField
+
+
+class IxlanPrefixes(Record):
+    ix = JsonField
+
+    def __str__(self):
+        return str(self.prefix)
+
+
+class Ixlans(Record):
+    ix = JsonField
+
+    def __str__(self):
+        return str(self.name or self.ix.name)
+
+
+class NetworkContacts(Record):
+    net = JsonField
+
+
+class NetworkFacilities(Record):
+    net = JsonField
+
+    def __str__(self):
+        return "{} at {}".format(self.net.name, self.fac.name)
+
+
+class Facilities(Record):
+    org = JsonField
+    fac = JsonField
+
+
+class NetworkIxlans(Record):
+    def __str__(self):
+        return str(self.asn)
+
+
+class Networks(Record):
+    org = JsonField
+
+
+class Organizations(Record):
+    pass
+
+
+class Synchronizations(Record):
+    def __str__(self):
+        return self.time

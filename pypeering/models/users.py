@@ -17,13 +17,13 @@ limitations under the License.
 from pypeering.core.response import Record, JsonField
 
 
+class Groups(Record):
+    def __str__(self):
+        return self.name
+
+
 class Users(Record):
     groups = [Groups]
 
     def __str__(self):
         return self.username
-
-
-class Groups(Record):
-    def __str__(self):
-        return self.name

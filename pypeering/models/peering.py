@@ -14,10 +14,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from pypeering.core.response import Record
+from pypeering.core.response import Record, JsonField
 from pypeering.core.endpoint import DetailEndpoint
 from pypeering.models.bgp import Relationships
-from pypeering.models.net import Connections
 from pypeering.models.devices import Platforms
 
 
@@ -53,7 +52,7 @@ class Emails(Record):
 
 class InternetExchangePeeringSessions(Record):
     autonomous_system = AutonomousSystems
-    ixp_connection = Connections
+    ixp_connection = JsonField # XXX Connections
 
 
 class Routers(Record):

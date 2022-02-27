@@ -18,7 +18,7 @@ from six.moves.urllib.parse import urlsplit
 
 from pypeering.core.query import Request
 from pypeering.core.response import Record, JsonField
-from pypeering.models.peering import InternetExchangePoints, Routers
+from pypeering.models.peering import InternetExchanges, Routers
 
 
 class Connections(Record):
@@ -37,7 +37,7 @@ class Connections(Record):
     """
 
     # XXX has_details = True
-    internet_exchange_point = InternetExchangePoints
+    internet_exchange_point = InternetExchanges
     router = Routers
     config_context = JsonField
     # XXX tags = [Tags]

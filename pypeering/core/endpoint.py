@@ -47,7 +47,6 @@ class Endpoint(object):
         self.api = api
         self.base_url = api.base_url
         self.token = api.token
-        self.session_key = api.session_key
         self.url = "{base_url}/{app}/{endpoint}".format(
             base_url=self.base_url,
             app=app.name,
@@ -101,7 +100,6 @@ class Endpoint(object):
         req = Request(
             base="{}/".format(self.url),
             token=self.token,
-            session_key=self.session_key,
             http_session=self.api.http_session,
             threading=self.api.threading,
             limit=limit,
@@ -163,7 +161,6 @@ class Endpoint(object):
             key=key,
             base=self.url,
             token=self.token,
-            session_key=self.session_key,
             http_session=self.api.http_session,
         )
         try:
@@ -252,7 +249,6 @@ class Endpoint(object):
             filters=kwargs,
             base=self.url,
             token=self.token,
-            session_key=self.session_key,
             http_session=self.api.http_session,
             threading=self.api.threading,
             limit=limit,
@@ -314,7 +310,6 @@ class Endpoint(object):
         req = Request(
             base=self.url,
             token=self.token,
-            session_key=self.session_key,
             http_session=self.api.http_session,
         ).post(args[0] if args else kwargs)
 
@@ -375,7 +370,6 @@ class Endpoint(object):
         req = Request(
             base=self.url,
             token=self.token,
-            session_key=self.session_key,
             http_session=self.api.http_session,
         ).patch(series)
 
@@ -440,7 +434,6 @@ class Endpoint(object):
         req = Request(
             base=self.url,
             token=self.token,
-            session_key=self.session_key,
             http_session=self.api.http_session,
         )
         return True if req.delete(data=[{"id": i} for i in cleaned_ids]) else False
@@ -489,7 +482,6 @@ class Endpoint(object):
             filters=kwargs,
             base=self.url,
             token=self.token,
-            session_key=self.session_key,
             http_session=self.api.http_session,
         )
 
@@ -510,7 +502,6 @@ class DetailEndpoint(object):
         self.request_kwargs = dict(
             base=self.url,
             token=parent_obj.api.token,
-            session_key=parent_obj.api.session_key,
             http_session=parent_obj.api.http_session,
         )
 

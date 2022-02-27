@@ -419,7 +419,6 @@ class Record(object):
             req = Request(
                 base=self.url,
                 token=self.api.token,
-                session_key=self.api.session_key,
                 http_session=self.api.http_session,
             )
             self._parse_values(next(req.get()))
@@ -532,7 +531,6 @@ class Record(object):
                 key=self.id,
                 base=self.endpoint.url,
                 token=self.api.token,
-                session_key=self.api.session_key,
                 http_session=self.api.http_session,
             )
             if req.patch(updates):
@@ -579,7 +577,6 @@ class Record(object):
             key=self.id,
             base=self.endpoint.url,
             token=self.api.token,
-            session_key=self.api.session_key,
             http_session=self.api.http_session,
         )
         return True if req.delete() else False
